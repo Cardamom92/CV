@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CV Editor - Karam Haidar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-color: #9C1C38;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.4;
+            font-size: 11pt;
+        }
+
+        .cv-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 1056px;
+            position: relative;
+        }
+
+        .cv-content {
+            padding: 40px 50px;
+        }
+
+        /* Header Section with Theme Color Background */
+        .header-section {
+            background-color: var(--theme-color);
+            color: white;
+            padding: 30px 40px 30px 50px;
+            margin: -40px -50px 30px -50px;
+            position: relative;
+            border-radius: 0 !important;
+        }
+
+        .cv-title {
+            font-size: 43pt;
+            font-weight: 300;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .personal-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 25px;
+            font-size: 11pt;
+        }
+
+        .info-label {
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .info-value {
+            font-weight: 300;
+            color: white;
+        }
+
+        [contenteditable="true"].info-label {
+            font-weight: 400;
+        }
+
+        .info-icon {
+            font-size: 16px;
+            width: 24px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* Regular sections */
+        .section {
+            margin-bottom: 25px;
+            position: relative;
+            border: 2px dashed transparent;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .section:not(.header-section):hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .section.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 16pt;
+            font-weight: 300;
+            color: var(--theme-color);
+            margin-right: 20px;
+            white-space: nowrap;
+            background: white;
+            padding-right: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Horizontal line extending from section title */
+        .section-header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2.5px;
+            background-color: var(--theme-color);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .drag-handle {
+            cursor: move;
+            color: #007bff;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            padding: 5px;
+            position: absolute;
+            right: 0;
+            z-index: 3;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .section:hover .drag-handle {
+            opacity: 1;
+        }
+
+        /* Two-column layout for entries */
+        .entry-container {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 20px;
+            margin-bottom: 12px;
+            align-items: start;
+        }
+
+        .date-column {
+            font-weight: 500;
+            color: #2B2B2B;
+            text-align: left;
+            padding-top: 2px;
+        }
+
+        .content-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .institution, .company {
+            font-weight: 500;
+            margin-bottom: 2px;
+            color: #2B2B2B;
+        }
+
+        .description {
+            color: #2B2B2B;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .grade {
+            color: #2B2B2B;
+            font-style: italic;
+        }
+
+        /* Skills section styling with two columns */
+        .skills-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .skills-subsection {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .subsection-title {
+            font-weight: 500;
+            color: #2B2B2B;
+            margin-bottom: 15px;
+            font-size: 12pt;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .skill-name {
+            font-weight: 400;
+            color: #2B2B2B;
+            font-size: 10pt;
+        }
+
+        .progress-bar {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .progress-dot {
+            width: 20px;
+            height: 8px;
+            border: 1.5px solid var(--theme-color);
+            border-radius: 2px;
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot.filled {
+            background: var(--theme-color);
+        }
+
+        .progress-dot:hover {
+            transform: scaleY(1.2);
+        }
+
+        /* Page break styling */
+        .page-break {
+            border-bottom: 2px dashed #ccc;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .page-number {
+            position: absolute;
+            right: 0;
+            bottom: -15px;
+            font-size: 10pt;
+            color: var(--theme-color);
+            font-weight: 500;
+        }
+
+        /* Editable content styling */
+        [contenteditable="true"] {
+            outline: none;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        [contenteditable="true"]:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        [contenteditable="true"]:focus {
+            background-color: rgba(255,255,255,0.2);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+        }
+
+        .section:not(.header-section) [contenteditable="true"]:hover {
+            background-color: #f8f9fa;
+        }
+
+        .section:not(.header-section) [contenteditable="true"]:focus {
+            background-color: #e3f2fd;
+            box-shadow: 0 0 0 2px #007bff;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+        }
+
+        .toolbar button {
+            background: var(--theme-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Ubuntu', sans-serif;
+            white-space: nowrap;
+        }
+
+        .toolbar button:hover {
+            opacity: 0.8;
+        }
+
+        .toolbar input {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 12px;
+            width: 80px;
+        }
+
+        .toolbar label {
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .color-input-container {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: var(--theme-color);
+        }
+
+        .toolbar-separator {
+            height: 20px;
+            width: 1px;
+            background: #dee2e6;
+        }
+
+        /* Drop zones */
+        .drop-zone {
+            min-height: 20px;
+            border: 2px dashed transparent;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        /* Footer page number */
+        .footer-page-number {
+            position: absolute;
+            bottom: 30px;
+            right: 50px;
+            font-size: 10pt;
+            color: var(--theme-color);
+            font-weight: 500;
+        }
+
+        /* Links styling */
+        .link {
+            color: #2B2B2B;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="exportToPDF()">Export PDF</button>
+        <button onclick="saveAsHTML()">Save HTML</button>
+        <button onclick="resetLayout()">Reset Layout</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <label>Theme Color:</label>
+        <div class="color-input-container">
+            <input type="text" id="colorInput" value="#9C1C38" placeholder="#9C1C38" onchange="changeThemeColor(this.value)">
+            <div class="color-preview" id="colorPreview"></div>
+        </div>
+        
+        <div class="toolbar-separator"></div>
+        
+        <button onclick="toggleIcons()" id="iconToggle">Show Icons</button>
+    </div>
+
+    <div class="cv-container">
+        <div class="cv-content">
+            <!-- Header Section with Theme Color -->
+            <div class="header-section section" draggable="true" data-section="header">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="cv-title" contenteditable="true">Curriculum Vitae</div>
+                <div class="personal-info" id="personalInfo">
+                    <span class="info-label" contenteditable="true">Name</span>
+                    <span class="info-value" contenteditable="true">Karam Haidar</span>
+                    <span class="info-label" contenteditable="true">Address</span>
+                    <span class="info-value" contenteditable="true">Elisabeth-Breuer-Str. 09 | 51065 Köln</span>
+                    <span class="info-label" contenteditable="true">E-Mail</span>
+                    <span class="info-value" contenteditable="true">Karam-1992@windowslive.com</span>
+                    <span class="info-label" contenteditable="true">Mobile</span>
+                    <span class="info-value" contenteditable="true">+49(0)1577 9872 306</span>
+                    <span class="info-label" contenteditable="true">Born</span>
+                    <span class="info-value" contenteditable="true">January 13, 1993 in Hama, Syria</span>
+                </div>
+                <div class="personal-info hidden" id="personalInfoIcons">
+                    <span class="info-icon">▪</span>
+                    <span class="info-value" contenteditable="true">Karam Haidar</span>
+                    <span class="info-icon">⌂</span>
+                    <span class="info-value" contenteditable="true">Elisabeth-Breuer-Str. 09 | 51065 Köln</span>
+                    <span class="info-icon">✉</span>
+                    <span class="info-value" contenteditable="true">Karam-1992@windowslive.com</span>
+                    <span class="info-icon">☎</span>
+                    <span class="info-value" contenteditable="true">+49(0)1577 9872 306</span>
+                    <span class="info-icon">◐</span>
+                    <span class="info-value" contenteditable="true">January 13, 1993 in Hama, Syria</span>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-1"></div>
+
+            <!-- Education Section -->
+            <div class="section" draggable="true" data-section="education">
+                <div class="section-header">
+                    <div class="section-title" contenteditable="true">Education</div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+                
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2023 – Present</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">TH Köln</div>
+                        <div class="description" contenteditable="true">Master's in Product Design and Process Development</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2017 - Dec 2022</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">HTWG Konstanz - Bachelor of Engineering</div>
+                        <div class="description" contenteditable="true">Mechanical engineering.</div>
+                        <div class="grade" contenteditable="true">Grade: 1.7 (good)</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2016 - March 2017</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">Sprachenkolleg für ausländische Studierende, Freiburg</div>
+                        <div class="description" contenteditable="true">DSH Certificate: C1</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Dec 2010 - Dec 2013</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">Faculty of Architecture, Damascus University, Syria</div>
+                        <div class="description" contenteditable="true">Bachelor's degree (not completed due to war)</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2001 - May 2010</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">Ali Bin Abi Taleb Gymnasium, Hama, Syrien</div>
+                        <div class="grade" contenteditable="true">Grade of the Abitur in German interpretation: 1,4</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-2"></div>
+
+            <!-- Work Experience Section -->
+            <div class="section" draggable="true" data-section="work">
+                <div class="section-header">
+                    <div class="section-title" contenteditable="true">Work experience</div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2021 - June 2023</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Bodensee Racing Team, Konstanz, Deutschland</div>
+                        <div class="description" contenteditable="true">Aerodynamic, CFD-simulation, design and manufacturing</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Oct 2020 - Jan 2021</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Student supervision of Learning groups</div>
+                        <div class="description" contenteditable="true">Tutor for maths 1 and technical mechanics 1</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Feb 2019 - Sep 2019</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Reifenhäuser Reicofil GmbH & Co. KG, Troisdorf, Deutschland</div>
+                        <div class="description" contenteditable="true">Practical semester (intern)</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">May 2016 - July 2016</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Architekturbüro Michler, Bad Säckingen, Deutschland</div>
+                        <div class="description" contenteditable="true">Internship</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Aug 2015 - Oct 2015</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Easy Bite Restaurant, Kuala Lumpur, Malaysia</div>
+                        <div class="description" contenteditable="true">Manager - Full-time</div>
+                        <div class="description" contenteditable="true">Cash register, organization of business processes, accounting</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Dec 2002 - Sep 2011</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Al-Kamal Furniture Factory, Hama, Syria</div>
+                        <div class="description" contenteditable="true">Worker in the foam cutting process - part-time</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-break">
+                <span class="page-number">Seite 1/2</span>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-3"></div>
+
+            <!-- Knowledge & Skills Section -->
+            <div class="section" draggable="true" data-section="skills">
+                <div class="section-header">
+                    <div class="section-title" contenteditable="true">Knowledge & Skills</div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+
+                <div class="skills-content">
+                    <!-- Languages Column -->
+                    <div class="skills-subsection">
+                        <div class="subsection-title" contenteditable="true">Languages</div>
+                        <div class="skills-list">
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Arabic</div>
+                                <div class="progress-bar" data-level="5">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">German</div>
+                                <div class="progress-bar" data-level="4">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">English</div>
+                                <div class="progress-bar" data-level="4">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">French</div>
+                                <div class="progress-bar" data-level="1">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PC Skills Column -->
+                    <div class="skills-subsection">
+                        <div class="subsection-title" contenteditable="true">PC Skills</div>
+                        <div class="skills-list">
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Microsoft Office</div>
+                                <div class="progress-bar" data-level="5">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Creo Parametric</div>
+                                <div class="progress-bar" data-level="5">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Figma</div>
+                                <div class="progress-bar" data-level="4">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">AutoCAD</div>
+                                <div class="progress-bar" data-level="4">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Ansys Fluent</div>
+                                <div class="progress-bar" data-level="4">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">DaVinci Resolve</div>
+                                <div class="progress-bar" data-level="3">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">Python</div>
+                                <div class="progress-bar" data-level="2">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot filled" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-4"></div>
+
+            <!-- Voluntary Work Section -->
+            <div class="section" draggable="true" data-section="voluntary">
+                <div class="section-header">
+                    <div class="section-title" contenteditable="true">Voluntary work</div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Dec 2021 - Aug 2023</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Café Endlicht at the HTWG Konstanz</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">May 2017 - Dec 2017</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Englisch Skill up - Project: IELTS Writing Clinic</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">Sep 2016 - Feb 2020</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Syrian Researchers Initiative</div>
+                        <div class="description link" contenteditable="true">http://www.syr-res.com/about/english.html</div>
+                        <div class="description" contenteditable="true">Translator and editor</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">May 2016 - Feb 2017</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">Interpreter, Bad Säckingen, Germany</div>
+                        <div class="description" contenteditable="true">Support for refugees in official meetings etc.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-5"></div>
+
+            <!-- Scholarships Section -->
+            <div class="section" draggable="true" data-section="scholarships">
+                <div class="section-header">
+                    <div class="section-title" contenteditable="true">Scholarships</div>
+                    <div class="drag-handle">⋮⋮</div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">2017 - Present</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">"Welcome" scholarship program of the German University Foundation</div>
+                        <div class="description link" contenteditable="true">http://tinyurl.com/24wqkgvf</div>
+                    </div>
+                </div>
+
+                <div class="entry-container">
+                    <div class="date-column" contenteditable="true">2016 - March 2022</div>
+                    <div class="content-column">
+                        <div class="company" contenteditable="true">DAAD-Baden-Württemberg Scholarship for Syrian Refugees II</div>
+                        <div class="description link" contenteditable="true">https://www.daad.de/</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="drop-zone-6"></div>
+
+            <div class="footer-page-number">Seite 2/2</div>
+        </div>
+    </div>
+
+    <script>
+        let draggedElement = null;
+        let showIcons = false;
+
+        // Make sections draggable
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('dragstart', handleDragStart);
+            section.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Setup drop zones
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+            zone.addEventListener('dragenter', handleDragEnter);
+            zone.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            if (draggedElement) {
+                this.parentNode.insertBefore(draggedElement, this.nextSibling);
+            }
+        }
+
+        function setLevel(dot, level) {
+            const progressBar = dot.parentElement;
+            const dots = progressBar.querySelectorAll('.progress-dot');
+            
+            dots.forEach((d, index) => {
+                if (index < level) {
+                    d.classList.add('filled');
+                } else {
+                    d.classList.remove('filled');
+                }
+            });
+            
+            progressBar.setAttribute('data-level', level);
+        }
+
+        function changeThemeColor(color) {
+            if (color.match(/^#[0-9A-F]{6}$/i)) {
+                document.documentElement.style.setProperty('--theme-color', color);
+                document.getElementById('colorPreview').style.backgroundColor = color;
+            }
+        }
+
+        function toggleIcons() {
+            showIcons = !showIcons;
+            const textInfo = document.getElementById('personalInfo');
+            const iconInfo = document.getElementById('personalInfoIcons');
+            const toggleButton = document.getElementById('iconToggle');
+            
+            if (showIcons) {
+                textInfo.classList.add('hidden');
+                iconInfo.classList.remove('hidden');
+                toggleButton.textContent = 'Show Text';
+            } else {
+                textInfo.classList.remove('hidden');
+                iconInfo.classList.add('hidden');
+                toggleButton.textContent = 'Show Icons';
+            }
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+
+        function saveAsHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cv-karam-haidar.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetLayout() {
+            if (confirm('Reset to original layout? This will undo all changes.')) {
+                location.reload();
+            }
+        }
+
+        // Initialize color input
+        document.getElementById('colorInput').addEventListener('input', function() {
+            changeThemeColor(this.value);
+        });
+
+        // Print styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @media print {
+                body { background: white; padding: 0; padding-top: 0; }
+                .toolbar { display: none !important; }
+                .cv-container { box-shadow: none; margin: 0; }
+                .drag-handle { display: none !important; }
+                .section { border: none !important; background: none !important; }
+                .section:not(.header-section):hover { background: none !important; }
+                .drop-zone { display: none !important; }
+                [contenteditable="true"]:hover,
+                [contenteditable="true"]:focus { 
+                    background-color: transparent !important; 
+                    box-shadow: none !important; 
+                }
+                .header-section {
+                    background-color: var(--theme-color) !important;
+                    color: white !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
