@@ -23,36 +23,38 @@
             font-family: 'Ubuntu', sans-serif;
             background-color: #f5f5f5;
             padding: 20px;
-            line-height: 1.4;
+            line-height: 1.3;
             font-size: 11pt;
             color: var(--text-color);
         }
         .cv-container {
-            max-width: 800px;
+            max-width: 842px;
             margin: 0 auto;
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            min-height: 1056px;
+            min-height: 1123px;
             position: relative;
         }
         .cv-content {
-            padding: 40px 50px;
+            padding: 35px 40px;
         }
         /* Header Section */
         .header-section {
             background-color: var(--theme-color);
             color: white;
-            padding: 30px 40px 30px 50px;
-            margin: -40px -50px 30px -50px;
+            padding: 25px 40px 25px 40px; /* Slightly reduced vertical padding */
+            margin: -35px -40px 25px -40px; /* Adjusted margins to fit the container */
             position: relative;
             border-radius: 0 !important;
+            width: calc(100% + 80px); /* Ensures full width with adjusted margins */
+            box-sizing: border-box; /* Ensures padding is included in width calculation */
         }
         .cv-title {
             font-size: 43pt;
             font-weight: 300;
             margin-bottom: 25px;
             margin-top: 20px;
-            margin-left: 55px;
+            margin-left: 40px;
             text-align: left;
         }
         .personal-info {
@@ -62,7 +64,7 @@
             font-size: 11pt;
             margin-bottom: 20px;
             margin-top: 0px;
-            margin-left: 55px;
+            margin-left: 40px;
         }
         .info-label {
             font-weight: 400;
@@ -83,7 +85,7 @@
         }
         /* Sections */
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             position: relative;
             border: 2px dashed transparent;
             padding: 5px;
@@ -96,7 +98,7 @@
         }
         .section.dragging {
             opacity: 0.5;
-            transform: rotate(3deg);
+            transform: rotate(2.5deg);
         }
         .section-header {
             display: flex;
@@ -224,16 +226,16 @@
         /* Page Break */
         .page-break {
             border-bottom: 2px dashed #ccc;
-            margin: 30px 0;
+            margin: 30px 0px;
             position: relative;
         }
         .page-number {
             position: absolute;
             right: 0;
-            bottom: -15px;
+            bottom: 0px;
             font-size: 10pt;
             color: var(--theme-color);
-            font-weight: 500;
+            font-weight: 400;
         }
         /* Editable */
         [contenteditable="true"] {
@@ -308,7 +310,7 @@
         }
         /* Drop Zones */
         .drop-zone {
-            min-height: 25px;
+            min-height: 10px;
             border: 2px dashed transparent;
             border-radius: 5px;
             transition: all 0.3s ease;
@@ -343,7 +345,7 @@
             border: none;
             border-radius: 15px;
             cursor: pointer;
-            transition: all 0.0s;
+            transition: all 0.4s;
             color: var(--text-pill);
             display: flex;
             align-items: center;
@@ -385,11 +387,11 @@
         /* Add Section Button */
         .add-section-button {
             position: absolute;
-            center: 40px;
+            left: 320px;
             top: 103%;
             transform: scale(1.0);
             z-index: 0;
-            width: 60px;
+            width: 50px;
             height: 25px;
             font-size: 14px;
         }
@@ -406,7 +408,7 @@
 <body>
         <div class="toolbar">
         <button onclick="undoLastChange()" title="Undo"><i class="fas fa-undo"></i></button>
-        <button onclick="exportToPDF()" title="PDF"><i class="fas fa-file-pdf"></i></button>
+        <button onclick="exportToPDF()" title="PDF">PDF</button>
         <button onclick="saveAsHTML()" title="HTML">HTML</button>
         <button onclick="resetLayout()" title="Reset">Reset</button>
         <button onclick="clearAllContent()" title="Clear">Clear</button>
@@ -425,14 +427,16 @@
                 <div class="personal-info" id="personalInfo">
                     <span class="info-label" contenteditable="true">Name</span>
                     <span class="info-value" contenteditable="true">Karam Haidar</span>
-                    <span class="info-label" contenteditable="true">Address</span>
-                    <span class="info-value" contenteditable="true">Elisabeth-Breuer-Str. 09 | 51065 Köln</span>
+                    <span class="info-label" contenteditable="true">Location</span>
+                    <span class="info-value" contenteditable="true">Cologne, Germany</span>
                     <span class="info-label" contenteditable="true">E-Mail</span>
                     <span class="info-value" contenteditable="true">Karam-1992@windowslive.com</span>
                     <span class="info-label" contenteditable="true">Mobile</span>
                     <span class="info-value" contenteditable="true">+49(0)1577 9872 306</span>
-                    <span class="info-label" contenteditable="true">Born</span>
-                    <span class="info-value" contenteditable="true">January 13, 1993 in Hama, Syria</span>
+                    <span class="info-label" contenteditable="true">Date of birth</span>
+                    <span class="info-value" contenteditable="true">January 13, 1993</span>
+                    <span class="info-label" contenteditable="true">Website</span>
+                    <span class="info-value" contenteditable="true">https://karam-1992.wixsite.com/myportfolio</span>
                 </div>
                 <div class="personal-info hidden" id="personalInfoIcons">
                     <span class="info-icon">▪</span>
@@ -545,7 +549,6 @@
                     <div class="content-column">
                         <div class="company" contenteditable="true">Easy Bite Restaurant, Kuala Lumpur, Malaysia</div>
                         <div class="description" contenteditable="true">Manager - Full-time</div>
-                        <div class="description" contenteditable="true">Cash register, organization of business processes, accounting</div>
                     </div>
                 </div>
                 <div class="entry-container">
@@ -1028,14 +1031,88 @@
         if (confirm('Reset to original layout?')) location.reload();
     }
 
-    function clearAllContent() {
-        if (confirm('Clear all content?')) {
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.textContent = '';
+   function clearAllContent() {
+    if (confirm('Clear all editable content and reset entries? This cannot be undone.')) {
+        // Clear ONLY the right column in personal info (values, not labels)
+        document.querySelectorAll('#personalInfo .info-value[contenteditable="true"], #personalInfoIcons .info-value[contenteditable="true"]').forEach(el => {
+            el.textContent = '';
+        });
+
+        // Clear all entries in sections and add a new default entry
+        document.querySelectorAll('.section:not(.header-section)').forEach(section => {
+            const sectionType = section.getAttribute('data-section');
+            const entries = section.querySelectorAll('.entry-container, .skill-item');
+
+            // Remove all existing entries
+            entries.forEach(entry => {
+                entry.remove();
             });
-            saveState();
-        }
+
+            // Add a new default entry based on section type
+            let newEntryHTML = '';
+            if (sectionType === 'skills') {
+                const skillsSubsections = section.querySelectorAll('.skills-subsection');
+                skillsSubsections.forEach(subsection => {
+                    const subsectionType = subsection.querySelector('.subsection-title').textContent.trim().toLowerCase();
+                    if (subsectionType === 'languages') {
+                        newEntryHTML = `
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">New Language</div>
+                                <div class="progress-bar" data-level="1">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                                <button class="pill-button delete-entry-button skills-subsection-button" data-element="lang${Date.now()}"><i class="fas fa-minus"></i></button>
+                            </div>
+                        `;
+                        subsection.querySelector('.skills-list').innerHTML = newEntryHTML;
+                    } else if (subsectionType === 'pc skills' || subsectionType === 'pc') {
+                        newEntryHTML = `
+                            <div class="skill-item">
+                                <div class="skill-name" contenteditable="true">New PC Skill</div>
+                                <div class="progress-bar" data-level="1">
+                                    <div class="progress-dot filled" onclick="setLevel(this, 1)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 2)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 3)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 4)"></div>
+                                    <div class="progress-dot" onclick="setLevel(this, 5)"></div>
+                                </div>
+                                <button class="pill-button delete-entry-button skills-subsection-button" data-element="pc${Date.now()}"><i class="fas fa-minus"></i></button>
+                            </div>
+                        `;
+                        subsection.querySelector('.skills-list').innerHTML = newEntryHTML;
+                    }
+                });
+            } else {
+                newEntryHTML = `
+                    <div class="entry-container">
+                        <button class="pill-button delete-entry-button" data-element="${sectionType}${Date.now()}"><i class="fas fa-minus"></i></button>
+                        <div class="date-column" contenteditable="true">New Date</div>
+                        <div class="content-column">
+                            <div class="institution" contenteditable="true">New Institution/Company</div>
+                            <div class="description" contenteditable="true">New Description</div>
+                        </div>
+                    </div>
+                `;
+                // Insert the new entry BEFORE the add-entry-button
+                const addEntryButton = section.querySelector('.add-entry-button');
+                if (addEntryButton) {
+                    addEntryButton.insertAdjacentHTML('beforebegin', newEntryHTML);
+                } else {
+                    section.insertAdjacentHTML('beforeend', newEntryHTML);
+                }
+            }
+        });
+
+        saveState();
+        reattachEventListeners();
     }
+}
+
+
 
     // Initialize color input
     document.getElementById('colorInput').addEventListener('input', function() {
@@ -1048,6 +1125,7 @@
         @media print {
             body { background: white; padding: 0; }
             .toolbar { display: none !important; }
+            .page-break { display: page-number !important; }
             .cv-container { box-shadow: none; margin: 0; }
             .drag-handle, .pill-button { display: none !important; }
             .section { border: none !important; background: none !important; }
