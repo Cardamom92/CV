@@ -32,7 +32,7 @@
             font-family: 'Ubuntu', sans-serif;
             background-color: #f5f5f5;
             padding: 20px;
-            line-height: 1.3;
+            line-height: 1.2;
             font-size: 11pt;
             color: var(--text-color);
         }
@@ -40,17 +40,38 @@
         .cv-container {
             max-width: 842px;
             margin: 0 auto;
+            background: var(--light-bg);
+            box-shadow: none;
+            position: relative;
+        }
+        
+        .cv-page {
+            min-height: 1123px; /* A4 height */
+            max-height: 1123px;
+            overflow: visible;
+            position: relative;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px; /* Visual separation between pages */
             background: white;
             box-shadow: var(--shadow);
-            min-height: 1123px;
-            position: relative;
+        }
+        
+        .cv-page:last-child {
+            page-break-after: auto;
+            min-height: auto;
+            max-height: none;
+            margin-bottom: 0;
         }
         
         .cv-content {
             padding: 35px 40px;
+            flex: 1;
+            overflow: visible;
         }
         
-        /* Header Section */
+        /* Header Section - only on first page */
         .header-section {
             background-color: var(--theme-color);
             color: white;
@@ -103,15 +124,16 @@
         }
         
         /* Sections */
+        .section:not(.header-section){
+            border-radius: 5px;
+        }
         .section{
             margin-bottom: 25px;
             position: relative;
             border: 2px dashed transparent;
             padding: 5px;
-            border-radius: 5px:not(.header-section);
             transition: var(--transition);
         }
-        
         .section:not(.header-section):hover {
             border-color: var(--theme-color);
             background-color: var(--light-bg);
@@ -184,7 +206,7 @@
         .description {
             font-weight: 300;
             margin-bottom: 2px;
-            line-height: 1.3;
+            line-height: 1.2;
         }
         
         
@@ -257,17 +279,11 @@
             transform: scaleY(1.2);
         }
         
-        /* Page Break */
-        .page-break {
-            border-bottom: 2px dashed #ccc;
-            margin: 30px 0;
-            position: relative;
-        }
-        
+        /* Page Number */
         .page-number {
             position: absolute;
-            right: 0;
             bottom: 20px;
+            right: 50px;
             font-size: 10pt;
             color: var(--theme-color);
             font-weight: 300;
@@ -496,15 +512,6 @@
             font-size: 14px;
             margin-right: 5px;
         }
-        /* Footer */
-        .footer-page-number {
-            position: absolute;
-            bottom: 20px;
-            right: 50px;
-            font-size: 10pt;
-            color: var(--theme-color);
-            font-weight: 300;
-        }
         
         /* Links */
         .link {
@@ -531,11 +538,29 @@
         
         /* Print Styles */
         @media print {
-            body { background: white; padding: 0; }
-            .toolbar, .section-controls, .entry-controls, .add-entry-btn, .add-section-btn { display: none !important; }
-            .page-break { display: page-number !important; }
-            .cv-container { box-shadow: none; margin: 0; }
-            .section { border: none !important; background: none !important; }
+            body { 
+                background: white; 
+                padding: 0; 
+            }
+            .toolbar, .section-controls, .entry-controls, .add-entry-btn, .add-section-btn { 
+                display: none !important; 
+            }
+            .cv-container { 
+                box-shadow: none; 
+                margin: 0; 
+            }
+            .cv-page {
+                page-break-after: always;
+                margin-bottom: 0;
+                box-shadow: none;
+            }
+            .cv-page:last-child {
+                page-break-after: auto;
+            }
+            .section { 
+                border: none !important; 
+                background: none !important; 
+            }
             .entry-container, .skill-item { 
                 border: none !important; 
                 background: none !important; 
@@ -622,8 +647,8 @@
         
         <div class="toolbar-group">
             <div class="toolbar-title">Export</div>
-            <button onclick="CVEditor.exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-            <button onclick="CVEditor.exportHTML()"><i class="fas fa-code"></i> HTML</button>
+            <button onclick="CVEditor.exportPDF()" title="this exports PDF..."><i class="fas fa-file-pdf"></i> PDF</button>
+            <button onclick="CVEditor.exportHTML()" title="save as HTML..."><i class="fas fa-code"></i> HTML</button>
         </div>
         
         <div class="toolbar-group">
@@ -632,7 +657,7 @@
                 <input type="color" id="colorPicker" class="color-picker-input" value="#9C1C38">
                 <input type="text" id="colorInput" value="#9C1C38" placeholder="#9C1C38">
             </div>
-            <select id="fontSelector" class="toolbar-select">
+            <select id="fontSelector" title="select font" class="toolbar-select">
                 <option value="'Ubuntu', sans-serif">Ubuntu</option>
                 <option value="'Roboto', sans-serif">Roboto</option>
                 <option value="'Open Sans', sans-serif">Open Sans</option>
@@ -649,542 +674,8 @@
         </div>
     </div>
     
-    <div class="cv-container">
-        <div class="cv-content" id="cvContent">
-            <!-- Header Section -->
-            <div class="header-section section">
-                <div class="cv-title" contenteditable="true">Curriculum Vitae</div>
-                <div class="personal-info" id="personalInfo">
-                    <span class="info-label" contenteditable="true">Name</span>
-                    <span class="info-value" contenteditable="true">Karam Haidar</span>
-                    <span class="info-label" contenteditable="true">Location</span>
-                    <span class="info-value" contenteditable="true">Cologne, Germany</span>
-                    <span class="info-label" contenteditable="true">E-Mail</span>
-                    <span class="info-value" contenteditable="true">Karam-1992@windowslive.com</span>
-                    <span class="info-label" contenteditable="true">Mobile</span>
-                    <span class="info-value" contenteditable="true">+49(0)1577 9872 306</span>
-                    <span class="info-label" contenteditable="true">Website</span>
-                    <span class="info-value" contenteditable="true">https://karam-1992.wixsite.com/myportfolio</span>
-                </div>
-                <div class="personal-info hidden" id="personalInfoIcons">
-                    <span class="info-icon">▪</span>
-                    <span class="info-value" contenteditable="true">Karam Haidar</span>
-                    <span class="info-icon">⌂</span>
-                    <span class="info-value" contenteditable="true">Elisabeth-Breuer-Str. 09 | 51065 Köln</span>
-                    <span class="info-icon">✉</span>
-                    <span class="info-value" contenteditable="true">Karam-1992@windowslive.com</span>
-                    <span class="info-icon">☎</span>
-                    <span class="info-value" contenteditable="true">+49(0)1577 9872 306</span>
-                    <span class="info-icon">◐</span>
-                    <span class="info-value" contenteditable="true">January 13, 1993 in Hama, Syria</span>
-                </div>
-            </div>
-            
-            <!-- Education Section -->
-            <div class="section" data-section="education">
-                <div class="section-header">
-                    <div class="section-title" contenteditable="true">Education</div>
-                    <div class="section-controls">
-                        <button class="action-button move-up-btn" title="Move section up"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn" title="Move section down"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete" title="Delete section"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn" title="Move up"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn" title="Move down"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete" title="Delete entry"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2023 – Present</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">TH Köln</div>
-                        <div class="description" contenteditable="true">Master's in Product Design and Process Development</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2017 - Dec 2022</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">HTWG Konstanz - Bachelor of Engineering</div>
-                        <div class="description" contenteditable="true">Mechanical engineering   |  Grade: 1.7 (good)</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2016 - March 2017</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">Sprachenkolleg für ausländische Studierende, Freiburg</div>
-                        <div class="description" contenteditable="true">DSH Certificate: C1</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Dec 2010 - Dec 2013</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">Faculty of Architecture, Damascus University, Syria</div>
-                        <div class="description" contenteditable="true">Bachelor's degree (not completed due to war)</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2001 - May 2010</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">Ali Bin Abi Taleb Gymnasium, Hama, Syrien</div>
-                        <div class="grade" contenteditable="true">Grade of the Abitur in German interpretation: 1,4</div>
-                    </div>
-                </div>
-                
-                <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
-                    <i class="fas fa-plus"></i> Add Education Entry
-                </div>
-            </div>
-            
-            <!-- Work Experience Section -->
-            <div class="section" data-section="work">
-                <div class="section-header">
-                    <div class="section-title" contenteditable="true">Work experience</div>
-                    <div class="section-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2021 - June 2023</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Bodensee Racing Team, Konstanz, Deutschland</div>
-                        <div class="description" contenteditable="true">Aerodynamic, CFD-simulation, design and manufacturing</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Oct 2020 - Jan 2021</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Student supervision of Learning groups</div>
-                        <div class="description" contenteditable="true">Tutor for maths 1 and technical mechanics 1</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Feb 2019 - Sep 2019</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Reifenhäuser Reicofil GmbH & Co. KG, Troisdorf, Deutschland</div>
-                        <div class="description" contenteditable="true">Practical semester (intern)</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">May 2016 - July 2016</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Architekturbüro Michler, Bad Säckingen, Deutschland</div>
-                        <div class="description" contenteditable="true">Internship</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Aug 2015 - Oct 2015</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Easy Bite Restaurant, Kuala Lumpur, Malaysia</div>
-                        <div class="description" contenteditable="true">Manager - Full-time</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Dec 2002 - Sep 2011</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Al-Kamal Furniture Factory, Hama, Syria</div>
-                        <div class="description" contenteditable="true">Worker in the foam cutting process - part-time</div>
-                    </div>
-                </div>
-                
-                <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
-                    <i class="fas fa-plus"></i> Add Work Experience
-                </div>
-            </div>
-            
-            <div class="page-break">
-                <span class="page-number">Seite 1/2</span>
-            </div>
-            
-            <!-- Knowledge & Skills Section -->
-            <div class="section skills-section" data-section="skills">
-                <div class="section-header">
-                    <div class="section-title" contenteditable="true">Knowledge & Skills</div>
-                    <div class="section-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="skills-content">
-                    <!-- Languages Column -->
-                    <div class="skills-subsection">
-                        <div class="subsection-title" contenteditable="true">Languages</div>
-                        <div class="skills-list">
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Arabic</div>
-                                <div class="progress-bar" data-level="5">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">German</div>
-                                <div class="progress-bar" data-level="4">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">English</div>
-                                <div class="progress-bar" data-level="4">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">French</div>
-                                <div class="progress-bar" data-level="1">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="add-entry-btn" onclick="CVEditor.addSkillsEntry(this, 'languages')">
-                            <i class="fas fa-plus"></i> Add Language
-                        </div>
-                    </div>
-                    
-                    <!-- PC Skills Column -->
-                    <div class="skills-subsection">
-                        <div class="subsection-title" contenteditable="true">PC Skills</div>
-                        <div class="skills-list">
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Microsoft Office</div>
-                                <div class="progress-bar" data-level="5">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Creo Parametric</div>
-                                <div class="progress-bar" data-level="5">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Figma</div>
-                                <div class="progress-bar" data-level="4">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">AutoCAD</div>
-                                <div class="progress-bar" data-level="4">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Ansys Fluent</div>
-                                <div class="progress-bar" data-level="4">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">DaVinci Resolve</div>
-                                <div class="progress-bar" data-level="3">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="skill-item">
-                                <div class="entry-controls">
-                                    <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                                    <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="skill-name" contenteditable="true">Python</div>
-                                <div class="progress-bar" data-level="2">
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                                    <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 2)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 3)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 4)"></div>
-                                    <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="add-entry-btn" onclick="CVEditor.addSkillsEntry(this, 'pc')">
-                            <i class="fas fa-plus"></i> Add PC Skill
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Voluntary Work Section -->
-            <div class="section" data-section="voluntary">
-                <div class="section-header">
-                    <div class="section-title" contenteditable="true">Voluntary work</div>
-                    <div class="section-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Dec 2021 - Aug 2023</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Café Endlicht at the HTWG Konstanz</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">May 2017 - Dec 2017</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Englisch Skill up - Project: IELTS Writing Clinic</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">Sep 2016 - Feb 2020</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Syrian Researchers Initiative</div>
-                        <div class="description link" contenteditable="true">http://www.syr-res.com/about/english.html</div>
-                        <div class="description" contenteditable="true">Translator and editor</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">May 2016 - Feb 2017</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">Interpreter, Bad Säckingen, Germany</div>
-                        <div class="description" contenteditable="true">Support for refugees in official meetings etc.</div>
-                    </div>
-                </div>
-                
-                <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
-                    <i class="fas fa-plus"></i> Add Voluntary Work
-                </div>
-            </div>
-            
-            <!-- Scholarships Section -->
-            <div class="section" data-section="scholarships">
-                <div class="section-header">
-                    <div class="section-title" contenteditable="true">Scholarships</div>
-                    <div class="section-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">2017 - Present</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">"Welcome" scholarship program of the German University Foundation</div>
-                        <div class="description link" contenteditable="true">http://tinyurl.com/24wqkgvf</div>
-                    </div>
-                </div>
-                
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">2016 - March 2022</div>
-                    <div class="content-column">
-                        <div class="company" contenteditable="true">DAAD-Baden-Württemberg Scholarship for Syrian Refugees II</div>
-                        <div class="description link" contenteditable="true">https://www.daad.de/</div>
-                    </div>
-                </div>
-                
-                <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
-                    <i class="fas fa-plus"></i> Add Scholarship
-                </div>
-            </div>
-            
-            <div class="footer-page-number">Seite 2/2</div>
-            
-            <!-- Add Section Button -->
-            <button class="add-section-btn" onclick="CVEditor.addSection()" title="Add new section">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
+    <div class="cv-container" id="cvContainer">
+        <!-- Pages will be dynamically generated here -->
     </div>
 
     <script>
@@ -1196,52 +687,460 @@
             maxStates: 20,
             showIcons: false
         };
+
+        // CV Data structure
+        const cvData = {
+            header: {
+                title: "Curriculum Vitae",
+                personalInfo: {
+                    name: "Karam Haidar",
+                    location: "Cologne, Germany",
+                    email: "Karam-1992@windowslive.com",
+                    mobile: "+49(0)1577 9872 306",
+                    website: "https://karam-1992.wixsite.com/myportfolio"
+                },
+                personalInfoIcons: {
+                    name: "Karam Haidar",
+                    location: "Elisabeth-Breuer-Str. 09 | 51065 Köln",
+                    email: "Karam-1992@windowslive.com",
+                    mobile: "+49(0)1577 9872 306",
+                    birthdate: "January 13, 1993 in Hama, Syria"
+                }
+            },
+            sections: [
+                {
+                    id: "education",
+                    title: "Education",
+                    type: "entries",
+                    entries: [
+                        {
+                            date: "Oct 2023 – Present",
+                            institution: "TH Köln",
+                            description: "Master's in Product Design and Process Development"
+                        },
+                        {
+                            date: "Oct 2017 - Dec 2022",
+                            institution: "HTWG Konstanz - Bachelor of Engineering",
+                            description: "Mechanical engineering   |  Grade: 1.7 (good)"
+                        },
+                        {
+                            date: "Oct 2016 - March 2017",
+                            institution: "Sprachenkolleg für ausländische Studierende, Freiburg",
+                            description: "DSH Certificate: C1"
+                        },
+                        {
+                            date: "Dec 2010 - Dec 2013",
+                            institution: "Faculty of Architecture, Damascus University, Syria",
+                            description: "Bachelor's degree (not completed due to war)"
+                        },
+                        {
+                            date: "Oct 2001 - May 2010",
+                            institution: "Ali Bin Abi Taleb Gymnasium, Hama, Syrien",
+                            description: "Grade of the Abitur in German interpretation: 1,4"
+                        }
+                    ]
+                },
+                {
+                    id: "work",
+                    title: "Work experience",
+                    type: "entries",
+                    entries: [
+                        {
+                            date: "Oct 2021 - June 2023",
+                            institution: "Bodensee Racing Team, Konstanz, Deutschland",
+                            description: "Aerodynamic, CFD-simulation, design and manufacturing"
+                        },
+                        {
+                            date: "Oct 2020 - Jan 2021",
+                            institution: "Student supervision of Learning groups",
+                            description: "Tutor for maths 1 and technical mechanics 1"
+                        },
+                        {
+                            date: "Feb 2019 - Sep 2019",
+                            institution: "Reifenhäuser Reicofil GmbH & Co. KG, Troisdorf, Deutschland",
+                            description: "Practical semester (intern)"
+                        },
+                        {
+                            date: "May 2016 - July 2016",
+                            institution: "Architekturbüro Michler, Bad Säckingen, Deutschland",
+                            description: "Internship"
+                        },
+                        {
+                            date: "Aug 2015 - Oct 2015",
+                            institution: "Easy Bite Restaurant, Kuala Lumpur, Malaysia",
+                            description: "Manager - Full-time"
+                        },
+                        {
+                            date: "Dec 2002 - Sep 2011",
+                            institution: "Al-Kamal Furniture Factory, Hama, Syria",
+                            description: "Worker in the foam cutting process - part-time"
+                        }
+                    ]
+                },
+                {
+                    id: "skills",
+                    title: "Knowledge & Skills",
+                    type: "skills",
+                    subsections: [
+                        {
+                            title: "Languages",
+                            skills: [
+                                { name: "Arabic", level: 5 },
+                                { name: "German", level: 4 },
+                                { name: "English", level: 4 },
+                                { name: "French", level: 1 }
+                            ]
+                        },
+                        {
+                            title: "PC Skills",
+                            skills: [
+                                { name: "Microsoft Office", level: 5 },
+                                { name: "Creo Parametric", level: 5 },
+                                { name: "Figma", level: 4 },
+                                { name: "AutoCAD", level: 4 },
+                                { name: "Ansys Fluent", level: 4 },
+                                { name: "DaVinci Resolve", level: 3 },
+                                { name: "Python", level: 2 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "voluntary",
+                    title: "Voluntary work",
+                    type: "entries",
+                    entries: [
+                        {
+                            date: "Dec 2021 - Aug 2023",
+                            institution: "Café Endlicht at the HTWG Konstanz",
+                            description: ""
+                        },
+                        {
+                            date: "May 2017 - Dec 2017",
+                            institution: "Englisch Skill up - Project: IELTS Writing Clinic",
+                            description: ""
+                        },
+                        {
+                            date: "Sep 2016 - Feb 2020",
+                            institution: "Syrian Researchers Initiative",
+                            description: "http://www.syr-res.com/about/english.html\nTranslator and editor"
+                        },
+                        {
+                            date: "May 2016 - Feb 2017",
+                            institution: "Interpreter, Bad Säckingen, Germany",
+                            description: "Support for refugees in official meetings etc."
+                        }
+                    ]
+                },
+                {
+                    id: "scholarships",
+                    title: "Scholarships",
+                    type: "entries",
+                    entries: [
+                        {
+                            date: "2017 - Present",
+                            institution: "\"Welcome\" scholarship program of the German University Foundation",
+                            description: "http://tinyurl.com/24wqkgvf"
+                        },
+                        {
+                            date: "2016 - March 2022",
+                            institution: "DAAD-Baden-Württemberg Scholarship for Syrian Refugees II",
+                            description: "https://www.daad.de/"
+                        }
+                    ]
+                }
+            ]
+        };
         
         // Initialize the editor
         function init() {
+            renderCV();
             saveState();
             setupEventListeners();
-            setupContentEditable();
             syncColorPickers();
-            updatePageNumbers();
-            updateAddEntryButtonTexts();
-            // More robust mutation observer
-            const observer = new MutationObserver((mutations) => {
-                let needsUpdate = false;
+        }
+
+        // Store scroll position before re-rendering
+        function preserveScrollPosition(callback) {
+            const scrollPos = window.scrollY;
+            callback();
+            setTimeout(() => {
+                window.scrollTo(0, scrollPos);
+            }, 0);
+        }
+
+        // Render the complete CV
+        function renderCV() {
+            const container = document.getElementById('cvContainer');
+            container.innerHTML = '';
+            
+            // Create a temporary container to measure content
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.width = '762px'; // Content width (842px - 80px padding)
+            document.body.appendChild(tempContainer);
+            
+            // Render all content to measure
+            const allContent = renderAllContent();
+            tempContainer.innerHTML = allContent;
+            
+            // Calculate pages based on actual content height
+            const pages = calculatePages(tempContainer);
+            document.body.removeChild(tempContainer);
+            
+            // Create actual pages
+            createPages(pages);
+        }
+
+        // Render all content without pagination
+        function renderAllContent() {
+            let html = '';
+            
+            // Header section
+            html += renderHeader();
+            
+            // All other sections
+            cvData.sections.forEach(section => {
+                html += renderSection(section);
+            });
+            
+            // Add section button
+            html += `
+                <button class="add-section-btn" onclick="CVEditor.addSection()" title="Add new section">
+                    <i class="fas fa-plus"></i>
+                </button>
+            `;
+            
+            return html;
+        }
+
+        // Calculate page breaks based on actual content
+        function calculatePages(tempContainer) {
+            const PAGE_HEIGHT = 1083; // Available height (1123 - 40px margin)
+            const HEADER_HEIGHT = 200; // Approximate header height
+            const pages = [];
+            let currentPageContent = [];
+            let currentHeight = HEADER_HEIGHT; // Start with header on first page
+            let isFirstPage = true;
+            
+            // Add header to first page
+            if (isFirstPage) {
+                currentPageContent.push({ type: 'header', content: renderHeader() });
+            }
+            
+            // Process each section
+            const sections = tempContainer.querySelectorAll('.section:not(.header-section)');
+            sections.forEach((sectionEl, index) => {
+                const sectionHeight = sectionEl.offsetHeight + 25; // Add margin
                 
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList' || 
-                        mutation.type === 'characterData' || 
-                        (mutation.type === 'attributes' && mutation.attributeName === 'contenteditable')) {
-                        needsUpdate = true;
-                    }
-                });
-                if (needsUpdate) {
-                    setupEventListeners(); // Reattach event listeners
-                    updatePageNumbers();
-                    updateAddEntryButtonTexts();
-                    saveState();
+                // If section would overflow current page, start new page
+                if (currentHeight + sectionHeight > PAGE_HEIGHT && currentPageContent.length > (isFirstPage ? 1 : 0)) {
+                    pages.push({
+                        content: [...currentPageContent],
+                        pageNumber: pages.length + 1
+                    });
+                    currentPageContent = [];
+                    currentHeight = 0;
+                    isFirstPage = false;
                 }
+                
+                // Add section to current page
+                const sectionData = cvData.sections[index];
+                currentPageContent.push({ 
+                    type: 'section', 
+                    content: renderSection(sectionData),
+                    data: sectionData
+                });
+                currentHeight += sectionHeight;
             });
-            observer.observe(document.getElementById('cvContent'), {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['contenteditable'],
-                characterData: true
+            
+            // Add remaining content to last page
+            if (currentPageContent.length > 0) {
+                pages.push({
+                    content: [...currentPageContent],
+                    pageNumber: pages.length + 1
+                });
+            }
+            
+            // Ensure at least one page exists
+            if (pages.length === 0) {
+                pages.push({
+                    content: [{ type: 'header', content: renderHeader() }],
+                    pageNumber: 1
+                });
+            }
+            
+            return pages;
+        }
+
+        // Create actual page elements
+        function createPages(pages) {
+            const container = document.getElementById('cvContainer');
+            const totalPages = pages.length;
+            
+            pages.forEach((page, pageIndex) => {
+                const pageEl = document.createElement('div');
+                pageEl.className = 'cv-page';
+                pageEl.innerHTML = `
+                    <div class="cv-content">
+                        ${page.content.map(item => item.content).join('')}
+                        ${pageIndex === totalPages - 1 ? `
+                            <button class="add-section-btn" onclick="CVEditor.addSection()" title="Add new section">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="page-number">Page ${pageIndex + 1}/${totalPages}</div>
+                `;
+                container.appendChild(pageEl);
             });
+        }
+
+        // Render header section
+        function renderHeader() {
+            const header = cvData.header;
+            const personalInfo = state.showIcons ? header.personalInfoIcons : header.personalInfo;
+            
+            return `
+                <div class="header-section section">
+                    <div class="cv-title" contenteditable="true">${header.title}</div>
+                    <div class="personal-info ${state.showIcons ? 'hidden' : ''}" id="personalInfo">
+                        <span class="info-label" contenteditable="true">Name</span>
+                        <span class="info-value" contenteditable="true">${personalInfo.name}</span>
+                        <span class="info-label" contenteditable="true">Location</span>
+                        <span class="info-value" contenteditable="true">${personalInfo.location}</span>
+                        <span class="info-label" contenteditable="true">E-Mail</span>
+                        <span class="info-value" contenteditable="true">${personalInfo.email}</span>
+                        <span class="info-label" contenteditable="true">Mobile</span>
+                        <span class="info-value" contenteditable="true">${personalInfo.mobile}</span>
+                        <span class="info-label" contenteditable="true">Website</span>
+                        <span class="info-value" contenteditable="true">${personalInfo.website}</span>
+                    </div>
+                    <div class="personal-info ${state.showIcons ? '' : 'hidden'}" id="personalInfoIcons">
+                        <span class="info-icon">▪</span>
+                        <span class="info-value" contenteditable="true">${header.personalInfoIcons.name}</span>
+                        <span class="info-icon">⌂</span>
+                        <span class="info-value" contenteditable="true">${header.personalInfoIcons.location}</span>
+                        <span class="info-icon">✉</span>
+                        <span class="info-value" contenteditable="true">${header.personalInfoIcons.email}</span>
+                        <span class="info-icon">☎</span>
+                        <span class="info-value" contenteditable="true">${header.personalInfoIcons.mobile}</span>
+                        <span class="info-icon">◐</span>
+                        <span class="info-value" contenteditable="true">${header.personalInfoIcons.birthdate}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render a section
+        function renderSection(section) {
+            if (section.type === 'skills') {
+                return renderSkillsSection(section);
+            } else {
+                return renderEntriesSection(section);
+            }
+        }
+
+        // Render entries section
+        function renderEntriesSection(section) {
+            const entriesHTML = section.entries.map(entry => `
+                <div class="entry-container">
+                    <div class="entry-controls">
+                        <button class="action-button move-up-btn" title="Move up"><i class="fas fa-chevron-up"></i></button>
+                        <button class="action-button move-down-btn" title="Move down"><i class="fas fa-chevron-down"></i></button>
+                        <button class="action-button delete" title="Delete entry"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="date-column" contenteditable="true">${entry.date}</div>
+                    <div class="content-column">
+                        <div class="institution" contenteditable="true">${entry.institution}</div>
+                        ${entry.description ? entry.description.split('\n').map(desc => 
+                            `<div class="description ${desc.startsWith('http') ? 'link' : ''}" contenteditable="true">${desc}</div>`
+                        ).join('') : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="section" data-section="${section.id}">
+                    <div class="section-header">
+                        <div class="section-title" contenteditable="true">${section.title}</div>
+                        <div class="section-controls">
+                            <button class="action-button move-up-btn" title="Move section up"><i class="fas fa-chevron-up"></i></button>
+                            <button class="action-button move-down-btn" title="Move section down"><i class="fas fa-chevron-down"></i></button>
+                            <button class="action-button delete" title="Delete section"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    ${entriesHTML}
+                    <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
+                        <i class="fas fa-plus"></i> Add ${section.title.slice(0, -1)} Entry
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render skills section
+        function renderSkillsSection(section) {
+            const subsectionsHTML = section.subsections.map(subsection => {
+                const skillsHTML = subsection.skills.map(skill => `
+                    <div class="skill-item">
+                        <div class="entry-controls">
+                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
+                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
+                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="skill-name" contenteditable="true">${skill.name}</div>
+                        <div class="progress-bar" data-level="${skill.level}">
+                            ${[1,2,3,4,5].map(level => 
+                                `<div class="progress-dot ${level <= skill.level ? 'filled' : ''}" onclick="CVEditor.setLevel(this, ${level})"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="skills-subsection">
+                        <div class="subsection-title" contenteditable="true">${subsection.title}</div>
+                        <div class="skills-list">
+                            ${skillsHTML}
+                        </div>
+                        <div class="add-entry-btn" onclick="CVEditor.addSkillsEntry(this, '${subsection.title.toLowerCase()}')">
+                            <i class="fas fa-plus"></i> Add ${subsection.title.slice(0, -1)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="section skills-section" data-section="${section.id}">
+                    <div class="section-header">
+                        <div class="section-title" contenteditable="true">${section.title}</div>
+                        <div class="section-controls">
+                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
+                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
+                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="skills-content">
+                        ${subsectionsHTML}
+                    </div>
+                </div>
+            `;
         }
                 
         // Save current state to history
         function saveState() {
-            const cvContent = document.getElementById('cvContent').innerHTML;
+            // Update cvData from DOM
+            updateDataFromDOM();
+            
+            const cvContentString = JSON.stringify(cvData);
             
             // If we're not at the end of history, truncate future states
             if (state.currentIndex < state.history.length - 1) {
                 state.history = state.history.slice(0, state.currentIndex + 1);
             }
             
-            state.history.push(cvContent);
+            state.history.push(cvContentString);
             state.currentIndex = state.history.length - 1;
             
             // Limit history size
@@ -1249,6 +1148,76 @@
                 state.history.shift();
                 state.currentIndex--;
             }
+        }
+
+        // Update cvData from DOM changes
+        function updateDataFromDOM() {
+            // Update header
+            const titleEl = document.querySelector('.cv-title');
+            if (titleEl) cvData.header.title = titleEl.textContent;
+
+            // Update personal info
+            const personalInfoEls = document.querySelectorAll('#personalInfo .info-value');
+            if (personalInfoEls.length >= 5) {
+                cvData.header.personalInfo.name = personalInfoEls[0].textContent;
+                cvData.header.personalInfo.location = personalInfoEls[1].textContent;
+                cvData.header.personalInfo.email = personalInfoEls[2].textContent;
+                cvData.header.personalInfo.mobile = personalInfoEls[3].textContent;
+                cvData.header.personalInfo.website = personalInfoEls[4].textContent;
+            }
+
+            // Update sections
+            const sectionEls = document.querySelectorAll('.section:not(.header-section)');
+            sectionEls.forEach((sectionEl, index) => {
+                if (index < cvData.sections.length) {
+                    const section = cvData.sections[index];
+                    const titleEl = sectionEl.querySelector('.section-title');
+                    if (titleEl) section.title = titleEl.textContent;
+
+                    if (section.type === 'skills') {
+                        // Update skills data
+                        const subsectionEls = sectionEl.querySelectorAll('.skills-subsection');
+                        subsectionEls.forEach((subsectionEl, subIndex) => {
+                            if (subIndex < section.subsections.length) {
+                                const subsection = section.subsections[subIndex];
+                                const subTitleEl = subsectionEl.querySelector('.subsection-title');
+                                if (subTitleEl) subsection.title = subTitleEl.textContent;
+
+                                const skillEls = subsectionEl.querySelectorAll('.skill-item');
+                                subsection.skills = [];
+                                skillEls.forEach(skillEl => {
+                                    const nameEl = skillEl.querySelector('.skill-name');
+                                    const progressBar = skillEl.querySelector('.progress-bar');
+                                    if (nameEl && progressBar) {
+                                        subsection.skills.push({
+                                            name: nameEl.textContent,
+                                            level: parseInt(progressBar.getAttribute('data-level')) || 1
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        // Update entries data
+                        const entryEls = sectionEl.querySelectorAll('.entry-container');
+                        section.entries = [];
+                        entryEls.forEach(entryEl => {
+                            const dateEl = entryEl.querySelector('.date-column');
+                            const institutionEl = entryEl.querySelector('.institution');
+                            const descriptionEls = entryEl.querySelectorAll('.description');
+                            
+                            if (dateEl && institutionEl) {
+                                const descriptions = Array.from(descriptionEls).map(el => el.textContent);
+                                section.entries.push({
+                                    date: dateEl.textContent,
+                                    institution: institutionEl.textContent,
+                                    description: descriptions.join('\n')
+                                });
+                            }
+                        });
+                    }
+                }
+            });
         }
         
         // Undo last change
@@ -1276,15 +1245,13 @@
             // Store scroll position
             const scrollPos = window.scrollY;
             
-            // Restore content
-            document.getElementById('cvContent').innerHTML = state.history[state.currentIndex];
+            // Restore data
+            Object.assign(cvData, JSON.parse(state.history[state.currentIndex]));
             
-            // Reinitialize everything
+            // Re-render
+            renderCV();
             setupEventListeners();
-            setupContentEditable();
             syncColorPickers();
-            updatePageNumbers();
-            updateAddEntryButtonTexts();
             
             // Restore scroll position
             window.scrollTo(0, scrollPos);
@@ -1292,26 +1259,26 @@
 
         // Set up all event listeners
         function setupEventListeners() {
-            // Remove all existing event listeners first
-            document.querySelectorAll('*').forEach(element => {
-                element.replaceWith(element.cloneNode(true));
-            });
-        
             // Toolbar buttons
-            document.getElementById('colorPicker').addEventListener('input', function() {
-                changeThemeColor(this.value);
-            });
+            const colorPicker = document.getElementById('colorPicker');
+            const colorInput = document.getElementById('colorInput');
+            const fontSelector = document.getElementById('fontSelector');
             
-            document.getElementById('colorInput').addEventListener('input', function() {
-                changeThemeColor(this.value);
-            });
+            if (colorPicker) {
+                colorPicker.removeEventListener('input', handleColorChange);
+                colorPicker.addEventListener('input', handleColorChange);
+            }
             
-            document.getElementById('fontSelector').addEventListener('change', function() {
-                document.body.style.fontFamily = this.value;
-                localStorage.setItem('cvFont', this.value);
-                saveState();
-            });
-        
+            if (colorInput) {
+                colorInput.removeEventListener('input', handleColorInputChange);
+                colorInput.addEventListener('input', handleColorInputChange);
+            }
+            
+            if (fontSelector) {
+                fontSelector.removeEventListener('change', handleFontChange);
+                fontSelector.addEventListener('change', handleFontChange);
+            }
+
             // Section controls
             document.querySelectorAll('.section-controls .move-up-btn').forEach(btn => {
                 btn.addEventListener('click', moveSectionUp);
@@ -1324,7 +1291,7 @@
             document.querySelectorAll('.section-controls .delete').forEach(btn => {
                 btn.addEventListener('click', deleteSection);
             });
-        
+
             // Entry controls
             document.querySelectorAll('.entry-controls .move-up-btn').forEach(btn => {
                 btn.addEventListener('click', moveEntryUp);
@@ -1337,22 +1304,46 @@
             document.querySelectorAll('.entry-controls .delete').forEach(btn => {
                 btn.addEventListener('click', deleteEntry);
             });
-        
-            // Add entry buttons
-            document.querySelectorAll('.add-entry-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    CVEditor.addEntry(this);
-                });
-            });
-        
+
             // Content editable elements
             document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.addEventListener('input', saveState);
-                el.addEventListener('blur', saveState);
+                el.addEventListener('input', debounce(handleContentChange, 500));
+                el.addEventListener('blur', handleContentChange);
             });
-            // Add mouseenter/mouseleave events for reliable hover behavior
+
+            // Entry hover effects
+            setupHoverEffects();
+        }
+
+        // Event handlers
+        function handleColorChange(e) {
+            changeThemeColor(e.target.value);
+            document.getElementById('colorInput').value = e.target.value;
+        }
+
+        function handleColorInputChange(e) {
+            changeThemeColor(e.target.value);
+            document.getElementById('colorPicker').value = e.target.value;
+        }
+
+        function handleFontChange(e) {
+            document.body.style.fontFamily = e.target.value;
+            saveState();
+        }
+
+        function handleContentChange() {
+            saveState();
+            // Re-render to update pagination with scroll preservation
+            preserveScrollPosition(() => {
+                renderCV();
+            });
+        }
+
+        // Setup hover effects for entry controls
+        function setupHoverEffects() {
             document.querySelectorAll('.entry-container, .skill-item').forEach(entry => {
                 const controls = entry.querySelector('.entry-controls');
+                if (!controls) return;
                 
                 let hideTimeout;
                 
@@ -1368,7 +1359,7 @@
                             controls.style.opacity = '0';
                             controls.style.pointerEvents = 'none';
                         }
-                    }, 50); // time delay (in 1/1000)
+                    }, 120); //Time delay in milli seconds
                 });
                 
                 controls.addEventListener('mouseenter', () => {
@@ -1381,12 +1372,18 @@
                 });
             });
         }
-        // Set up content editable elements
-        function setupContentEditable() {
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.addEventListener('input', saveState);
-                el.addEventListener('blur', saveState);
-            });
+        
+        // Utility function for debouncing
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
         
         // Sync color picker inputs
@@ -1411,54 +1408,67 @@
         // Toggle between icons and text
         function toggleIcons() {
             state.showIcons = !state.showIcons;
-            const textInfo = document.getElementById('personalInfo');
-            const iconInfo = document.getElementById('personalInfoIcons');
             const toggleButton = document.getElementById('iconToggle');
             
             if (state.showIcons) {
-                textInfo.classList.add('hidden');
-                iconInfo.classList.remove('hidden');
                 toggleButton.innerHTML = '<i class="fas fa-font"></i> Text';
             } else {
-                textInfo.classList.remove('hidden');
-                iconInfo.classList.add('hidden');
                 toggleButton.innerHTML = '<i class="fas fa-icons"></i> Icons';
             }
             
-            saveState();
+            preserveScrollPosition(() => {
+                renderCV();
+                setupEventListeners();
+            });
         }
         
         // Move section up
         function moveSectionUp(e) {
-            const section = e.target.closest('.section');
-            const allSections = Array.from(document.querySelectorAll('.section:not(.header-section)'));
-            const currentIndex = allSections.indexOf(section);
+            const sectionEl = e.target.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const sectionIndex = cvData.sections.findIndex(s => s.id === sectionId);
             
-            if (currentIndex > 0) {
-                const previousSection = allSections[currentIndex - 1];
-                section.parentNode.insertBefore(section, previousSection);
+            if (sectionIndex > 0) {
+                [cvData.sections[sectionIndex], cvData.sections[sectionIndex - 1]] = 
+                [cvData.sections[sectionIndex - 1], cvData.sections[sectionIndex]];
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
         
         // Move section down
         function moveSectionDown(e) {
-            const section = e.target.closest('.section');
-            const allSections = Array.from(document.querySelectorAll('.section:not(.header-section)'));
-            const currentIndex = allSections.indexOf(section);
+            const sectionEl = e.target.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const sectionIndex = cvData.sections.findIndex(s => s.id === sectionId);
             
-            if (currentIndex < allSections.length - 1) {
-                const nextSection = allSections[currentIndex + 1];
-                section.parentNode.insertBefore(nextSection, section);
+            if (sectionIndex < cvData.sections.length - 1) {
+                [cvData.sections[sectionIndex], cvData.sections[sectionIndex + 1]] = 
+                [cvData.sections[sectionIndex + 1], cvData.sections[sectionIndex]];
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
         
         // Delete section
         function deleteSection(e) {
-            const section = e.target.closest('.section');
+            const sectionEl = e.target.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            
             if (confirm("Delete this section?")) {
-                section.remove();
+                cvData.sections = cvData.sections.filter(s => s.id !== sectionId);
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
@@ -1466,178 +1476,201 @@
         // Add new section
         function addSection() {
             const timestamp = Date.now();
-            const newSectionHTML = `
-                <div class="section" data-section="new-section-${timestamp}">
-                    <div class="section-header">
-                        <div class="section-title" contenteditable="true">New Section</div>
-                        <div class="section-controls">
-                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    
-                    <div class="entry-container">
-                        <div class="entry-controls">
-                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <div class="date-column" contenteditable="true">New Date</div>
-                        <div class="content-column">
-                            <div class="institution" contenteditable="true">New Institution/Company</div>
-                            <div class="description" contenteditable="true">New Description</div>
-                        </div>
-                    </div>
-                    
-                    <div class="add-entry-btn" onclick="CVEditor.addEntry(this)">
-                        <i class="fas fa-plus"></i> Add Entry
-                    </div>
-                </div>
-            `;
+            const newSection = {
+                id: `new-section-${timestamp}`,
+                title: "New Section",
+                type: "entries",
+                entries: [{
+                    date: "New Date",
+                    institution: "New Institution/Company",
+                    description: "New Description"
+                }]
+            };
             
-            // Add before the footer
-            const footer = document.querySelector('.footer-page-number');
-            footer.insertAdjacentHTML('beforebegin', newSectionHTML);
-            
+            cvData.sections.push(newSection);
+            preserveScrollPosition(() => {
+                renderCV();
+                setupEventListeners();
+            });
             saveState();
-            setupEventListeners();
-            setupContentEditable();
         }
         
         // Add new entry
         function addEntry(button) {
-            const section = button.closest('.section');
-            const sectionType = section.getAttribute('data-section');
+            const sectionEl = button.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
             
-            if (sectionType === 'skills') {
-                addSkillsEntry(button);
-            } else {
-                addRegularEntry(section);
+            if (section) {
+                if (section.type === 'skills') {
+                    // Handle skills section differently
+                    return;
+                } else {
+                    section.entries.push({
+                        date: "New Date",
+                        institution: "New Institution/Company",
+                        description: "New Description"
+                    });
+                }
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
+                saveState();
             }
-            
-            saveState();
-            setupEventListeners();
-            setupContentEditable();
-        }
-        
-        // Add regular entry
-        function addRegularEntry(section) {
-            const newEntryHTML = `
-                <div class="entry-container">
-                    <div class="entry-controls">
-                        <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                        <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="date-column" contenteditable="true">New Date</div>
-                    <div class="content-column">
-                        <div class="institution" contenteditable="true">New Institution/Company</div>
-                        <div class="description" contenteditable="true">New Description</div>
-                    </div>
-                </div>
-            `;
-            
-            // Add before the add entry button
-            const addBtn = section.querySelector('.add-entry-btn');
-            addBtn.insertAdjacentHTML('beforebegin', newEntryHTML);
         }
         
         // Add skills entry
         function addSkillsEntry(button, subsectionType) {
-            const subsection = button.closest('.skills-subsection');
-            const skillsList = subsection.querySelector('.skills-list');
-            let newEntryHTML = '';
+            const sectionEl = button.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
+            const subsectionEl = button.closest('.skills-subsection');
+            const subsectionIndex = Array.from(sectionEl.querySelectorAll('.skills-subsection')).indexOf(subsectionEl);
             
-            if (subsectionType === 'languages') {
-                newEntryHTML = `
-                    <div class="skill-item">
-                        <div class="entry-controls">
-                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <div class="skill-name" contenteditable="true">New Language</div>
-                        <div class="progress-bar" data-level="1">
-                            <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 2)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 3)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 4)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                        </div>
-                    </div>
-                `;
-            } else if (subsectionType === 'pc') {
-                newEntryHTML = `
-                    <div class="skill-item">
-                        <div class="entry-controls">
-                            <button class="action-button move-up-btn"><i class="fas fa-chevron-up"></i></button>
-                            <button class="action-button move-down-btn"><i class="fas fa-chevron-down"></i></button>
-                            <button class="action-button delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <div class="skill-name" contenteditable="true">New PC Skill</div>
-                        <div class="progress-bar" data-level="1">
-                            <div class="progress-dot filled" onclick="CVEditor.setLevel(this, 1)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 2)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 3)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 4)"></div>
-                            <div class="progress-dot" onclick="CVEditor.setLevel(this, 5)"></div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            if (newEntryHTML) {
-                // Add before the add entry button
-                button.insertAdjacentHTML('beforebegin', newEntryHTML);
+            if (section && section.subsections && section.subsections[subsectionIndex]) {
+                const subsection = section.subsections[subsectionIndex];
+                const newSkill = {
+                    name: subsectionType.includes('language') ? "New Language" : "New PC Skill",
+                    level: 1
+                };
+                subsection.skills.push(newSkill);
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
+                saveState();
             }
         }
         
         // Move entry up
         function moveEntryUp(e) {
-            const entry = e.target.closest('.entry-container, .skill-item');
-            const parent = entry.parentNode;
-            const prevEntry = entry.previousElementSibling;
+            const entryEl = e.target.closest('.entry-container, .skill-item');
+            const sectionEl = entryEl.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
             
-            if (prevEntry && (prevEntry.classList.contains('entry-container') || prevEntry.classList.contains('skill-item'))) {
-                parent.insertBefore(entry, prevEntry);
+            if (section) {
+                if (section.type === 'skills') {
+                    // Handle skills
+                    const subsectionEl = entryEl.closest('.skills-subsection');
+                    const subsectionIndex = Array.from(sectionEl.querySelectorAll('.skills-subsection')).indexOf(subsectionEl);
+                    const skillIndex = Array.from(subsectionEl.querySelectorAll('.skill-item')).indexOf(entryEl);
+                    
+                    if (skillIndex > 0) {
+                        const subsection = section.subsections[subsectionIndex];
+                        [subsection.skills[skillIndex], subsection.skills[skillIndex - 1]] = 
+                        [subsection.skills[skillIndex - 1], subsection.skills[skillIndex]];
+                    }
+                } else {
+                    // Handle regular entries
+                    const entryIndex = Array.from(sectionEl.querySelectorAll('.entry-container')).indexOf(entryEl);
+                    if (entryIndex > 0) {
+                        [section.entries[entryIndex], section.entries[entryIndex - 1]] = 
+                        [section.entries[entryIndex - 1], section.entries[entryIndex]];
+                    }
+                }
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
         
         // Move entry down
         function moveEntryDown(e) {
-            const entry = e.target.closest('.entry-container, .skill-item');
-            const parent = entry.parentNode;
-            const nextEntry = entry.nextElementSibling;
+            const entryEl = e.target.closest('.entry-container, .skill-item');
+            const sectionEl = entryEl.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
             
-            if (nextEntry && (nextEntry.classList.contains('entry-container') || nextEntry.classList.contains('skill-item'))) {
-                parent.insertBefore(nextEntry, entry);
+            if (section) {
+                if (section.type === 'skills') {
+                    // Handle skills
+                    const subsectionEl = entryEl.closest('.skills-subsection');
+                    const subsectionIndex = Array.from(sectionEl.querySelectorAll('.skills-subsection')).indexOf(subsectionEl);
+                    const skillIndex = Array.from(subsectionEl.querySelectorAll('.skill-item')).indexOf(entryEl);
+                    const subsection = section.subsections[subsectionIndex];
+                    
+                    if (skillIndex < subsection.skills.length - 1) {
+                        [subsection.skills[skillIndex], subsection.skills[skillIndex + 1]] = 
+                        [subsection.skills[skillIndex + 1], subsection.skills[skillIndex]];
+                    }
+                } else {
+                    // Handle regular entries
+                    const entryIndex = Array.from(sectionEl.querySelectorAll('.entry-container')).indexOf(entryEl);
+                    if (entryIndex < section.entries.length - 1) {
+                        [section.entries[entryIndex], section.entries[entryIndex + 1]] = 
+                        [section.entries[entryIndex + 1], section.entries[entryIndex]];
+                    }
+                }
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
         
         // Delete entry
         function deleteEntry(e) {
-            const entry = e.target.closest('.entry-container, .skill-item');
-            if (confirm("Delete this entry?")) {
-                entry.remove();
+            const entryEl = e.target.closest('.entry-container, .skill-item');
+            const sectionEl = entryEl.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
+            
+            if (confirm("Delete this entry?") && section) {
+                if (section.type === 'skills') {
+                    // Handle skills
+                    const subsectionEl = entryEl.closest('.skills-subsection');
+                    const subsectionIndex = Array.from(sectionEl.querySelectorAll('.skills-subsection')).indexOf(subsectionEl);
+                    const skillIndex = Array.from(subsectionEl.querySelectorAll('.skill-item')).indexOf(entryEl);
+                    
+                    section.subsections[subsectionIndex].skills.splice(skillIndex, 1);
+                } else {
+                    // Handle regular entries
+                    const entryIndex = Array.from(sectionEl.querySelectorAll('.entry-container')).indexOf(entryEl);
+                    section.entries.splice(entryIndex, 1);
+                }
+                
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
             }
         }
         
         // Set skill level
         function setLevel(dot, level) {
-            const progressBar = dot.parentElement;
-            const dots = progressBar.querySelectorAll('.progress-dot');
+            const skillEl = dot.closest('.skill-item');
+            const sectionEl = skillEl.closest('.section');
+            const sectionId = sectionEl.getAttribute('data-section');
+            const section = cvData.sections.find(s => s.id === sectionId);
             
-            dots.forEach((d, index) => {
-                if (index < level) d.classList.add('filled');
-                else d.classList.remove('filled');
-            });
-            
-            progressBar.setAttribute('data-level', level);
-            saveState();
+            if (section) {
+                const subsectionEl = skillEl.closest('.skills-subsection');
+                const subsectionIndex = Array.from(sectionEl.querySelectorAll('.skills-subsection')).indexOf(subsectionEl);
+                const skillIndex = Array.from(subsectionEl.querySelectorAll('.skill-item')).indexOf(skillEl);
+                
+                section.subsections[subsectionIndex].skills[skillIndex].level = level;
+                
+                // Update visual immediately
+                const progressBar = dot.parentElement;
+                const dots = progressBar.querySelectorAll('.progress-dot');
+                dots.forEach((d, index) => {
+                    if (index < level) d.classList.add('filled');
+                    else d.classList.remove('filled');
+                });
+                progressBar.setAttribute('data-level', level);
+                
+                saveState();
+            }
         }
         
         // Export to PDF
@@ -1645,7 +1678,7 @@
             window.print();
         }
         
-        // Export to HTML
+        // Export to HTML   title="this exoprt htmls ...."
         function exportHTML() {
             const htmlContent = document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html' });
@@ -1666,78 +1699,30 @@
         
         // Clear all content
         function clearContent() {
-            if (confirm('Clear all editable content and reset entries? This cannot be undone.')) {
-                // Clear personal info
-                document.querySelectorAll('#personalInfo .info-value[contenteditable="true"], #personalInfoIcons .info-value[contenteditable="true"]').forEach(el => {
-                    el.textContent = '';
-                });
-                
-                // Clear all sections
-                document.querySelectorAll('.section:not(.header-section)').forEach(section => {
-                    const sectionType = section.getAttribute('data-section');
-                    const entries = section.querySelectorAll('.entry-container, .skill-item');
-                    
-                    // Remove all entries
-                    entries.forEach(entry => entry.remove());
-                    
-                    // Add default entries based on section type
-                    if (sectionType === 'skills') {
-                        const addBtns = section.querySelectorAll('.add-entry-btn');
-                        addBtns.forEach(btn => {
-                            if (btn.textContent.includes('Language')) {
-                                addSkillsEntry(btn, 'languages');
-                            } else if (btn.textContent.includes('PC')) {
-                                addSkillsEntry(btn, 'pc');
-                            }
+            if (confirm('Clear all editable content and reset entries?')) {
+                // Reset to minimal data
+                cvData.sections.forEach(section => {
+                    if (section.type === 'skills') {
+                        section.subsections.forEach(subsection => {
+                            subsection.skills = [{
+                                name: `New ${subsection.title.slice(0, -1)}`,
+                                level: 1
+                            }];
                         });
                     } else {
-                        const addBtn = section.querySelector('.add-entry-btn');
-                        addRegularEntry(section);
+                        section.entries = [{
+                            date: "New Date",
+                            institution: "New Institution/Company",
+                            description: "New Description"
+                        }];
                     }
                 });
                 
+                preserveScrollPosition(() => {
+                    renderCV();
+                    setupEventListeners();
+                });
                 saveState();
-                setupEventListeners();
-                setupContentEditable();
-            }
-        }
-        function updatePageNumbers() {
-            const pageHeight = 1123; // A4 height in pixels
-            const sections = document.querySelectorAll('.section');
-            let currentPage = 1;
-            let currentHeight = 0;
-            
-            // Reset all page breaks and numbers
-            document.querySelectorAll('.page-break, .footer-page-number').forEach(el => el.remove());
-            
-            sections.forEach((section, index) => {
-                const sectionHeight = section.offsetHeight;
-                currentHeight += sectionHeight;
-                
-                // If this section would push us over the page limit, add a page break
-                if (currentHeight > pageHeight && index < sections.length - 1) {
-                    const pageBreak = document.createElement('div');
-                    pageBreak.className = 'page-break';
-                    pageBreak.innerHTML = `<span class="page-number">Page ${currentPage}/X</span>`;
-                    section.parentNode.insertBefore(pageBreak, section.nextSibling);
-                    
-                    currentPage++;
-                    currentHeight = sectionHeight; // Reset for new page
-                }
-            });
-            
-            // Update all page numbers (including the X in "Page 1/X")
-            const totalPages = currentPage;
-            document.querySelectorAll('.page-number').forEach(el => {
-                el.textContent = el.textContent.replace(/\/\d+$/, `/${totalPages}`);
-            });
-            
-            // Add footer page number if not exists
-            if (!document.querySelector('.footer-page-number')) {
-                const footer = document.createElement('div');
-                footer.className = 'footer-page-number';
-                footer.textContent = `Page ${totalPages}/${totalPages}`;
-                document.querySelector('.cv-content').appendChild(footer);
             }
         }
         
